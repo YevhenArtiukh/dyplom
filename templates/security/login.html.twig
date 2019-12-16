@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Załoguj się</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="YevhenArtiukh" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+
+    <!-- App css -->
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body class="authentication-bg">
+
+<div class="account-pages mt-5 mb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card">
+
+                    <!-- Logo -->
+                    <div class="card-header pt-4 pb-4 text-center bg-primary">
+                        <a href="{{ path('dashboard') }}">
+                            <span><img src="{{ asset('assets/images/logo.png') }}" alt="" height="18"></span>
+                        </a>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <div class="text-center w-75 m-auto">
+                            <h4 class="text-dark-50 text-center mt-0 font-weight-bold">Zaloguj się</h4>
+                            <p class="text-muted mb-4">Wpisz login i hasło.</p>
+                        </div>
+
+                        <form method="post">
+
+                            <div class="form-group">
+                                <label for="emailaddress">Login</label>
+                                <input type="text" value="{{ last_username }}" name="login" id="inputLogin" class="form-control" placeholder="Login" required autofocus>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Hasło</label>
+                                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                            <div class="form-group mb-0 text-center">
+                                <button class="btn btn-primary" type="submit"> Zaloguj się </button>
+                            </div>
+
+                        </form>
+                    </div> <!-- end card-body -->
+                </div>
+                <!-- end card -->
+
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Nie masz konta? <a href="{{ path('registration') }}" class="text-muted ml-1"><b>Zarejestruj się</b></a></p>
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end container -->
+</div>
+<!-- end page -->
+
+<footer class="footer footer-alt">
+    2019 © Yevhen Artiukh nr.47545
+</footer>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/app.min.js') }}"></script>
+</body>
+</html>

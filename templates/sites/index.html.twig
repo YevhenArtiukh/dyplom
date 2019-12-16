@@ -1,0 +1,58 @@
+{% extends 'index.html.twig' %}
+
+{% block title %}Wyniki{% endblock %}
+
+{% block body %}
+    {#{{ dump() }}#}
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Wyniki</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table id="basic-datatable" class="table">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Url</th>
+                            <th>LocalStorage</th>
+                            <th>SessionStorage</th>
+                            <th>Cookie</th>
+                            <th></th>
+                            <th>User email</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for site in sites %}
+                            <tr>
+                                <td>{{ site.id }}</td>
+                                <td><a href="{{ site.url }}"> {{ site.url }}</a></td>
+                                <td>{{ site.localStorage }}</td>
+                                <td>{{ site.sessionStorage }}</td>
+                                <td>{{ site.cookie }}</td>
+                                <td>{{ site.urlType }}</td>
+                                <td>
+                                    {% if site.user != null %}
+                                        {{ site.user.email }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div> <!-- end card body-->
+            </div> <!-- end card -->
+        </div><!-- end col-->
+    </div>
+
+{% endblock %}

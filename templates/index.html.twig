@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link href="{{ asset('assets/css/vendor/dataTables.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/vendor/responsive.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/vendor/buttons.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/vendor/select.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
+    <!-- App css -->
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="left-side-menu">
+        <div class="slimscroll-menu" id="left-side-menu-container">
+            <a href="{{ path('dashboard') }}" class="logo text-center">
+                <span class="logo-lg">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="" height="16">
+                </span>
+                <span class="logo-sm">
+                    <img src="{{ asset('assets/images/logo_sm.png') }}" alt="" height="16">
+                </span>
+            </a>
+
+            <ul class="metismenu side-nav">
+                <li class="side-nav-item">
+                    <a href="{{ path('dashboard') }}" class="side-nav-link">
+                        <i class="dripicons-meter"></i>
+                        <span> Strona główna </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ path('results') }}" class="side-nav-link">
+                        <i class="dripicons-folder-open"></i>
+                        <span> Wyniki </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="content-page">
+        <div class="content">
+            <div class="navbar-custom">
+                <ul class="list-unstyled topbar-right-menu float-right mb-0">
+                    <li class="dropdown notification-list">
+                        {% if app.token.user != 'anon.' %}
+                            <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <span>
+                                    <span class="account-user-name">{{ app.token.user.email }}</span>
+                                </span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated topbar-dropdown-menu profile-dropdown">
+                                <div class=" dropdown-header noti-title">
+                                    <h6 class="text-overflow m-0">Welcome !</h6>
+                                </div>
+                                <a href="{{ path('logout') }}" class="dropdown-item notify-item">
+                                    <i class="mdi mdi-logout mr-1"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </div>
+                        {% else %}
+                            <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" href="{{ path('app_login') }}">Załoguj się</a>
+                        {% endif %}
+                    </li>
+                </ul>
+                <button class="button-menu-mobile open-left disable-btn">
+                    <i class="mdi mdi-menu"></i>
+                </button>
+                <div class="app-search">
+                    {{ form_start(form,{'attr':{'style':'max-width:700px;'}}) }}
+                    <div class="input-group">
+                        {{ form_widget(form.url) }}
+                        <span class="mdi mdi-link"></span>
+                        {{ form_widget(form.urlType) }}
+                        <div class="input-group-append">
+                            {{ form_widget(form.save) }}
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            <div class="container-fluid">
+                {% block body %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title">Strona główna</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-5">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-account-multiple widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Customers">Stron internetowych</h5>
+                                        <h3 class="mt-3 mb-3">{{ sites }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-cart-plus widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">local storage</h5>
+                                        <h3 class="mt-3 mb-3">{{ localStorage }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-currency-usd widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0" title="Average Revenue">session storage</h5>
+                                        <h3 class="mt-3 mb-3">{{ sessionStorage }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-pulse widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0" title="Growth">cookie</h5>
+                                        <h3 class="mt-3 mb-3">{{ cookie }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-7">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mb-4">Wyniki badania</h4>
+                                <div class="mt-3 chartjs-chart" style="height: 320px;">
+                                    <canvas id="line-chart-example"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        2019 © Yevhen Artiukh nr.47545
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script src="{{ asset('assets/js/app.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/dataTables.bootstrap4.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/buttons.flash.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/dataTables.keyTable.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/dataTables.select.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/Chart.bundle.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        "use strict";
+        $("#basic-datatable").DataTable({
+            keys: !0,
+            language: {
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            }
+        });
+    });
+
+    ! function(r) {
+        "use strict";
+        var a = function() {
+            this.$body = r("body"), this.charts = []
+        };
+        a.prototype.respChart = function(a, t, e, o) {
+            var n = Chart.controllers.line.prototype.draw;
+            Chart.controllers.line.prototype.draw = function() {
+                n.apply(this, arguments);
+                var r = this.chart.chart.ctx,
+                    a = r.stroke;
+                r.stroke = function() {
+                    r.save(), r.shadowColor = "rgba(0,0,0,0.01)", r.shadowBlur = 20, r.shadowOffsetX = 0, r.shadowOffsetY = 5, a.apply(this, arguments), r.restore()
+                }
+            };
+            var s = Chart.controllers.doughnut.prototype.draw;
+            Chart.controllers.doughnut = Chart.controllers.doughnut.extend({
+                draw: function() {
+                    s.apply(this, arguments);
+                    var r = this.chart.chart.ctx,
+                        a = r.fill;
+                    r.fill = function() {
+                        r.save(), r.shadowColor = "rgba(0,0,0,0.03)", r.shadowBlur = 4, r.shadowOffsetX = 0, r.shadowOffsetY = 3, a.apply(this, arguments), r.restore()
+                    }
+                }
+            });
+            var l = Chart.controllers.bar.prototype.draw;
+            Chart.controllers.bar = Chart.controllers.bar.extend({
+                draw: function() {
+                    l.apply(this, arguments);
+                    var r = this.chart.chart.ctx,
+                        a = r.fill;
+                    r.fill = function() {
+                        r.save(), r.shadowColor = "rgba(0,0,0,0.01)", r.shadowBlur = 20, r.shadowOffsetX = 4, r.shadowOffsetY = 5, a.apply(this, arguments), r.restore()
+                    }
+                }
+            }), Chart.defaults.global.defaultFontColor = "#8391a2", Chart.defaults.scale.gridLines.color = "#8391a2";
+            var i = a.get(0).getContext("2d"),
+                d = r(a).parent();
+            return function() {
+                var n;
+                switch (a.attr("width", r(d).width()), t) {
+                    case "Line":
+                        n = new Chart(i, {
+                            type: "line",
+                            data: e,
+                            options: o
+                        });
+                        break;
+                    case "Doughnut":
+                        n = new Chart(i, {
+                            type: "doughnut",
+                            data: e,
+                            options: o
+                        });
+                        break;
+                    case "Pie":
+                        n = new Chart(i, {
+                            type: "pie",
+                            data: e,
+                            options: o
+                        });
+                        break;
+                    case "Bar":
+                        n = new Chart(i, {
+                            type: "bar",
+                            data: e,
+                            options: o
+                        });
+                        break;
+                    case "Radar":
+                        n = new Chart(i, {
+                            type: "radar",
+                            data: e,
+                            options: o
+                        });
+                        break;
+                    case "PolarArea":
+                        n = new Chart(i, {
+                            data: e,
+                            type: "polarArea",
+                            options: o
+                        })
+                }
+                return n
+            }()
+        }, a.prototype.initCharts = function() {
+            var a = [];
+            if (r("#line-chart-example").length > 0) {
+                a.push(this.respChart(r("#line-chart-example"), "Line", {
+                    labels: ["Polityka", "Sklep", "Blog", "Rozrywkowy", "Inne"],
+                    datasets: [{
+                        label: "local Storage",
+                        fill: !0,
+                        backgroundColor: "transparent",
+                        borderColor: "#727cf5",
+                        borderDash: [1, 4],
+                        data: {{ chart.local }}
+                    }, {
+                        label: "session Storage",
+                        fill: !0,
+                        backgroundColor: "transparent",
+                        borderColor: "#0acf97",
+                        borderDash: [5, 5],
+                        data: {{ chart.session }}
+                    }, {
+                        label: "cookie",
+                        fill: !0,
+                        backgroundColor: "transparent",
+                        borderColor: "#cf7900",
+                        borderDash: [1, 3],
+                        data: {{ chart.cookie }}
+                    }]
+                }, {
+                    maintainAspectRatio: !1,
+                    legend: {
+                        display: true
+                    },
+                    tooltips: {
+                        intersect: !1
+                    },
+                    hover: {
+                        intersect: !0
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: !1
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            reverse: !0,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.05)"
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                stepSize: 4
+                            },
+                            display: !0,
+                            borderDash: [5, 5],
+                            gridLines: {
+                                color: "rgba(0,0,0,0)",
+                                fontColor: "#fff"
+                            }
+                        }]
+                    }
+                }))
+            }
+            if (r("#bar-chart-example").length > 0) {
+                var t = document.getElementById("bar-chart-example").getContext("2d").createLinearGradient(0, 500, 0, 150);
+                t.addColorStop(0, "#fa5c7c"), t.addColorStop(1, "#727cf5");
+                var e = {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Sales Analytics",
+                        backgroundColor: t,
+                        borderColor: t,
+                        hoverBackgroundColor: t,
+                        hoverBorderColor: t,
+                        data: [65, 59, 80, 81, 56, 89, 40, 32, 65, 59, 80, 81]
+                    }, {
+                        label: "Dollar Rate",
+                        backgroundColor: "#e3eaef",
+                        borderColor: "#e3eaef",
+                        hoverBackgroundColor: "#e3eaef",
+                        hoverBorderColor: "#e3eaef",
+                        data: [89, 40, 32, 65, 59, 80, 81, 56, 89, 40, 65, 59]
+                    }]
+                };
+                a.push(this.respChart(r("#bar-chart-example"), "Bar", e, {
+                    maintainAspectRatio: !1,
+                    legend: {
+                        display: !1
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                display: !1,
+                                color: "rgba(0,0,0,0.05)"
+                            },
+                            stacked: !1,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            barPercentage: .7,
+                            categoryPercentage: .5,
+                            stacked: !1,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.01)"
+                            }
+                        }]
+                    }
+                }))
+            }
+            if (r("#donut-chart-example").length > 0) {
+                a.push(this.respChart(r("#donut-chart-example"), "Doughnut", {
+                    labels: ["Direct", "Affilliate", "Sponsored", "E-mail"],
+                    datasets: [{
+                        data: [300, 135, 48, 154],
+                        backgroundColor: ["#727cf5", "#fa5c7c", "#0acf97", "#ebeff2"],
+                        borderColor: "transparent",
+                        borderWidth: "3"
+                    }]
+                }, {
+                    maintainAspectRatio: !1,
+                    cutoutPercentage: 60,
+                    legend: {
+                        display: !1
+                    }
+                }))
+            }
+            if (r("#radar-chart-example").length > 0) {
+                a.push(this.respChart(r("#radar-chart-example"), "Radar", {
+                    labels: ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"],
+                    datasets: [{
+                        label: "Desktops",
+                        backgroundColor: "rgba(57,175,209,0.2)",
+                        borderColor: "#39afd1",
+                        pointBackgroundColor: "#39afd1",
+                        pointBorderColor: "#fff",
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "#39afd1",
+                        data: [65, 59, 90, 81, 56, 55, 40]
+                    }, {
+                        label: "Tablets",
+                        backgroundColor: "rgba(161, 127, 224,0.2)",
+                        borderColor: "#a17fe0",
+                        pointBackgroundColor: "#a17fe0",
+                        pointBorderColor: "#fff",
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "#a17fe0",
+                        data: [28, 48, 40, 19, 96, 27, 100]
+                    }]
+                }, {
+                    maintainAspectRatio: !1
+                }))
+            }
+            return a
+        }, a.prototype.init = function() {
+            var a = this;
+            Chart.defaults.global.defaultFontFamily = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif', a.charts = this.initCharts(), r(window).on("resize", function(t) {
+                r.each(a.charts, function(r, a) {
+                    try {
+                        a.destroy()
+                    } catch (r) {}
+                }), a.charts = a.initCharts()
+            })
+        }, r.ChartJs = new a, r.ChartJs.Constructor = a
+    }(window.jQuery),
+        function(r) {
+            "use strict";
+            r.ChartJs.init()
+        }(window.jQuery);
+</script>
+</body>
+</html>
