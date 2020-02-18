@@ -9,32 +9,38 @@
 namespace App\Controller;
 
 
-use App\Entity\Sites;
-use App\Form\SitesType;
+use App\Adapter\Sites\Sites;
+use App\Entity\Sites\Site;
+use App\Form\Sites\AddType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Entity\Sites\UseCase\CreateSite;
+use App\Entity\Sites\UseCase\CreateSite\Responder;
 
-class IndexController extends AbstractController
+class IndexController extends AbstractController implements Responder
 {
     /**
+     * @param Request $request
+     * @param CreateSite $createSite
+     * @param Sites $sites
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
      * @Route("/", name="dashboard")
      */
-    public function index(Request $request)
+    public function index(Request $request, CreateSite $createSite, Sites $sites)
     {
         $form = $this->createForm(
-            SitesType::class,
-            []
+            AddType::class
         );
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $variables = $this->getAllVariableFromUrl($data['url']);
 
-            $site = new Sites(
+            $command = new CreateSite\Command(
                 $data['url'],
                 $data['urlType'],
                 $variables[0],
@@ -42,17 +48,19 @@ class IndexController extends AbstractController
                 $variables[2],
                 $this->getUser()
             );
-            $this->getDoctrine()->getManager()->persist($site);
-            $this->getDoctrine()->getManager()->flush();
+            $command->setResponder($this);
+            $createSite->execute($command);
 
             return $this->redirectToRoute('dashboard');
         }
 
-        $chart['politics'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('politic');
-        $chart['sklep'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('shop');
-        $chart['blog'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('blog');
-        $chart['rozrywkowy'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('entertaining');
-        $chart['inne'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('other');
+        $chart = [
+            'politics' => $sites->findPolitic(),
+            'sklep' => $sites->findShop(),
+            'blog' => $sites->findBlog(),
+            'rozrywkowy' => $sites->findEntertaining(),
+            'inne' => $sites->findOther()
+        ];
 
         foreach ($chart as $type_url => $arr)
         {
@@ -69,7 +77,7 @@ class IndexController extends AbstractController
                 $countCookie = 0;
 
                 /**
-                 * @var Sites $site
+                 * @var Site $site
                  */
                 foreach ($arr as $k=>$site)
                 {
@@ -86,10 +94,10 @@ class IndexController extends AbstractController
 
         return $this->render('index.html.twig', [
             'form' => $form->createView(),
-            'sites' => count($this->getDoctrine()->getRepository('App:Sites')->findAll()),
-            'localStorage' => $this->getDoctrine()->getRepository('App:Sites')->findAllLocalStorage(),
-            'sessionStorage' => $this->getDoctrine()->getRepository('App:Sites')->findAllSessionStorage(),
-            'cookie' => $this->getDoctrine()->getRepository('App:Sites')->findAllCookie(),
+            'sites' => count($sites->findAll()),
+            'localStorage' => $sites->findCountLocalStorage(),
+            'sessionStorage' => $sites->findCountSessionStorage(),
+            'cookie' => $sites->findCountCookie(),
             'chart' => [
                 'local' => json_encode([
                     $chartData['politics']['local'],
@@ -225,24 +233,26 @@ class IndexController extends AbstractController
         return [$countLocalStorage, $countSessionStorage, $countCookies];
     }
 
-
     /**
+     * @param Request $request
+     * @param CreateSite $createSite
+     * @param Sites $sites
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
      * @Route("/results", name="results")
      */
-    public function resultsAction(Request $request)
+    public function resultsAction(Request $request, CreateSite $createSite, Sites $sites)
     {
         $form = $this->createForm(
-            SitesType::class,
-            []
+            AddType::class
         );
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $variables = $this->getAllVariableFromUrl($data['url']);
 
-            $site = new Sites(
+            $command = new CreateSite\Command(
                 $data['url'],
                 $data['urlType'],
                 $variables[0],
@@ -250,71 +260,15 @@ class IndexController extends AbstractController
                 $variables[2],
                 $this->getUser()
             );
-            $this->getDoctrine()->getManager()->persist($site);
-            $this->getDoctrine()->getManager()->flush();
+            $command->setResponder($this);
+            $createSite->execute($command);
 
             return $this->redirectToRoute('results');
         }
 
-        $chart['politics'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('politic');
-        $chart['sklep'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('shop');
-        $chart['blog'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('blog');
-        $chart['rozrywkowy'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('entertaining');
-        $chart['inne'] = $this->getDoctrine()->getRepository('App:Sites')->findByUrlType('other');
-
-        foreach ($chart as $type_url => $arr)
-        {
-            if(count($arr) == 0)
-            {
-                $chartData[$type_url]['local'] = 0;
-                $chartData[$type_url]['session'] = 0;
-                $chartData[$type_url]['cookie'] = 0;
-            }
-            else
-            {
-                $countLocal = 0;
-                $countSession = 0;
-                $countCookie = 0;
-
-                foreach ($arr as $k=>$site)
-                {
-                    $countLocal += $site->getLocalStorage();
-                    $countSession += $site->getSessionStorage();
-                    $countCookie += $site->getCookie();
-                }
-
-                $chartData[$type_url]['local'] = $countLocal/count($arr);
-                $chartData[$type_url]['session'] = $countSession/count($arr);
-                $chartData[$type_url]['cookie'] = $countCookie/count($arr);
-            }
-        }
-
         return $this->render('sites/index.html.twig', [
             'form' => $form->createView(),
-            'sites' => $this->getDoctrine()->getRepository('App:Sites')->findAll(),
-            'chart' => [
-                'local' => json_encode([
-                    $chartData['politics']['local'],
-                    $chartData['sklep']['local'],
-                    $chartData['blog']['local'],
-                    $chartData['rozrywkowy']['local'],
-                    $chartData['inne']['local']
-                ]),
-                'session' => json_encode([
-                    $chartData['politics']['session'],
-                    $chartData['sklep']['session'],
-                    $chartData['blog']['session'],
-                    $chartData['rozrywkowy']['session'],
-                    $chartData['inne']['session']
-                ]),
-                'cookie' => json_encode([
-                    $chartData['politics']['cookie'],
-                    $chartData['sklep']['cookie'],
-                    $chartData['blog']['cookie'],
-                    $chartData['rozrywkowy']['cookie'],
-                    $chartData['inne']['cookie']
-                ]),
-            ]
+            'sites' => $sites->findAll(),
         ]);
     }
 

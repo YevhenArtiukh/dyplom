@@ -20,7 +20,7 @@
             <nav class="navbar navbar-light bg-light static-top">
                 <div class="container">
                     {% if app.token.user == 'anon.' %}
-                        <a class="btn btn-primary" href="{{ path('app_login') }}">Załoguj się</a>
+                        <a class="btn btn-primary" href="{{ path('login') }}">Załoguj się</a>
                     {% else %}
                         <a class="navbar-brand" href="#">Statystyka</a>
                         <a class="btn btn-primary" href="{{ path('logout') }}">Wyłoguj się</a>

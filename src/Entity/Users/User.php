@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Users;
 
+use App\Entity\Sites\Site;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\UsersRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Users\UserRepository")
  */
-class Users implements UserInterface
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -32,6 +35,11 @@ class Users implements UserInterface
      */
     private $email;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Sites\Site", mappedBy="user")
+     */
+    private $sites;
+
     public function __construct(
         string $login,
         string $password,
@@ -41,6 +49,7 @@ class Users implements UserInterface
         $this->login = $login;
         $this->password = password_hash($password, PASSWORD_BCRYPT);
         $this->email = $email;
+        $this->sites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,6 +93,36 @@ class Users implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Collection|Site[]
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): self
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites[] = $site;
+            $site->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): self
+    {
+        if ($this->sites->contains($site)) {
+            $this->sites->removeElement($site);
+            // set the owning side to null (unless already changed)
+            if ($site->getUser() === $this) {
+                $site->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 
     /**
      * Returns the roles granted to the user.

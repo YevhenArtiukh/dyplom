@@ -8,8 +8,7 @@
 
 namespace App\DataFixtures;
 
-
-use App\Entity\Users;
+use App\Entity\Users\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -20,7 +19,7 @@ class UserFixtures extends Fixture
     {
         $faker = \Faker\Factory::create();
 
-        $admin = new Users(
+        $admin = new User(
             'admin',
             'admin',
             'artuh96@gmail.com'

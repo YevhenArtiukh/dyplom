@@ -26,3 +26,39 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    doctrine_application_transaction:
+        class: App\Adapter\Core\Transaction
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        public: true
+
+    Users:
+        class: App\Adapter\Users\Users
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        public: true
+
+    Sites:
+        class: App\Adapter\Sites\Sites
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        public: true;
+
+# adapters
+    App\Adapter\Sites\Sites:
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        public: true
+
+# use_cases
+
+    App\Entity\Users\UseCase\CreateUser:
+        arguments:
+            - "@Users"
+            - "@doctrine_application_transaction"
+
+    App\Entity\Sites\UseCase\CreateSite:
+        arguments:
+            - "@Sites"
+            - "@doctrine_application_transaction"

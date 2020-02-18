@@ -68,7 +68,7 @@
                                 </a>
                             </div>
                         {% else %}
-                            <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" href="{{ path('app_login') }}">Załoguj się</a>
+                            <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" href="{{ path('login') }}">Załoguj się</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -193,6 +193,7 @@
 <script src="{{ asset('assets/js/vendor/dataTables.keyTable.min.js') }}"></script>
 <script src="{{ asset('assets/js/vendor/dataTables.select.min.js') }}"></script>
 <script src="{{ asset('assets/js/vendor/Chart.bundle.min.js') }}"></script>
+{% block chart %}
 <script>
     $(document).ready(function() {
         "use strict";
@@ -468,5 +469,6 @@
             r.ChartJs.init()
         }(window.jQuery);
 </script>
+{% endblock %}
 </body>
 </html>

@@ -1,12 +1,12 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     encoders:
-        App\Entity\Users:
+        App\Entity\Users\User:
             algorithm: bcrypt
     providers:
         our_db_provider:
             entity:
-                class: App\Entity\Users
+                class: App\Entity\Users\User
                 property: login
     firewalls:
         dev:
@@ -15,10 +15,10 @@ security:
         main:
             anonymous: true
             form_login:
-                login_path: app_login
-                check_path: app_login
+                login_path: login
+                check_path: login
                 #always_use_default_target_path: false
-                default_target_path:            app_login
+                default_target_path:            login
                 #target_path_parameter:          _target_path
                 #use_referer:                    false
                 #user_checker: App\Security\UserChecker

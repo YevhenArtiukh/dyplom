@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Sites;
 
-use App\Entity\Sites;
+use App\Entity\Sites\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * @method Sites|null find($id, $lockMode = null, $lockVersion = null)
- * @method Sites|null findOneBy(array $criteria, array $orderBy = null)
- * @method Sites[]    findAll()
- * @method Sites[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Site|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Site|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Site[]    findAll()
+ * @method Site[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SitesRepository extends ServiceEntityRepository
+class SiteRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, Sites::class);
+        parent::__construct($registry, Site::class);
     }
 
     public function findAllLocalStorage()
@@ -25,7 +25,7 @@ class SitesRepository extends ServiceEntityRepository
         $queryBuilder=$entityManager->createQueryBuilder();
         $queryBuilder
             ->select('SUM(s.localStorage)')
-            ->from('App:Sites', 's');
+            ->from(Site::class, 's');
 
         return $queryBuilder->getQuery()->getSingleScalarResult();
     }
@@ -36,7 +36,7 @@ class SitesRepository extends ServiceEntityRepository
         $queryBuilder=$entityManager->createQueryBuilder();
         $queryBuilder
             ->select('SUM(s.sessionStorage)')
-            ->from('App:Sites', 's');
+            ->from(Site::class, 's');
 
         return $queryBuilder->getQuery()->getSingleScalarResult();
     }
@@ -47,13 +47,13 @@ class SitesRepository extends ServiceEntityRepository
         $queryBuilder=$entityManager->createQueryBuilder();
         $queryBuilder
             ->select('SUM(s.cookie)')
-            ->from('App:Sites', 's');
+            ->from(Site::class, 's');
 
         return $queryBuilder->getQuery()->getSingleScalarResult();
     }
 
     // /**
-    //  * @return Sites[] Returns an array of Sites objects
+    //  * @return Site[] Returns an array of Site objects
     //  */
     /*
     public function findByExampleField($value)
@@ -70,7 +70,7 @@ class SitesRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Sites
+    public function findOneBySomeField($value): ?Site
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.exampleField = :val')

@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Sites;
 
+use App\Entity\Users\User;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\SitesRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Sites\SiteRepository")
  */
-class Sites
+class Site
 {
     /**
      * @ORM\Id()
@@ -17,12 +18,12 @@ class Sites
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=255)
      */
     private $url;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=255)
      */
     private $urlType;
 
@@ -42,13 +43,12 @@ class Sites
     private $cookie;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Users\User", inversedBy="sites")
      */
     private $user;
 
     /**
-     * Sites constructor.
+     * Site constructor.
      * @param $url
      * @param $urlType
      * @param $localStorage
@@ -62,7 +62,8 @@ class Sites
         int $localStorage,
         int $sessionStorage,
         int $cookie,
-        ?Users $user)
+        ?User $user
+    )
     {
         $this->url = $url;
         $this->urlType = $urlType;
@@ -95,7 +96,7 @@ class Sites
         return $this->urlType;
     }
 
-    public function setUrlType($urlType): self
+    public function setUrlType(string $urlType): self
     {
         $this->urlType = $urlType;
 
@@ -107,7 +108,7 @@ class Sites
         return $this->localStorage;
     }
 
-    public function setLocalStorage($localStorage): self
+    public function setLocalStorage(int $localStorage): self
     {
         $this->localStorage = $localStorage;
 
@@ -119,7 +120,7 @@ class Sites
         return $this->sessionStorage;
     }
 
-    public function setSessionStorage($sessionStorage): self
+    public function setSessionStorage(int $sessionStorage): self
     {
         $this->sessionStorage = $sessionStorage;
 
@@ -131,19 +132,19 @@ class Sites
         return $this->cookie;
     }
 
-    public function setCookie($cookie): self
+    public function setCookie(int $cookie): self
     {
         $this->cookie = $cookie;
 
         return $this;
     }
 
-    public function getUser(): ?Users
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?Users $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
